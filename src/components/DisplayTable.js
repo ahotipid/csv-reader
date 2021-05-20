@@ -1,13 +1,67 @@
-import { useMemo } from 'react';
-import { useTable , usePagination } from 'react-table';
+import { useMemo , useState } from 'react';
+import { useTable ,
+        usePagination, 
+        useGlobalFilter,  
+        useFilters} from 'react-table';
+import {matchSorter} from 'match-sorter';
 
-import COLUMNS from './columns'
+import COLUMNS from './columns';
+
+// Define a default UI for filtering
+const DefaultColumnFilter = ({
+    column: { filterValue, preFilteredRows, setFilter },
+  }) => {
+    const count = preFilteredRows.length
+  
+    return (
+      <input
+        value={filterValue || ''}
+        onChange={e => {
+          setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
+        }}
+        placeholder={`Search ${count} records`}
+      />
+    )
+  }
+
+const fuzzyTextFilterFn = (rows, id, filterValue) => {
+    return matchSorter(rows, filterValue, { keys: [row => row.values[id]] })
+}
+
+  // Let the table remove the filter if the string is empty
+fuzzyTextFilterFn.autoRemove = val => !val;
 
 const DisplayTable = ({ jsonData }) => {
     const data = useMemo(() => jsonData, [jsonData])
     const columns = useMemo(() => COLUMNS, [])
     
+    const filterTypes = useMemo(
+        () => ({
+          // Add a new fuzzyTextFilterFn filter type.
+          fuzzyText: fuzzyTextFilterFn,
+          // Or, override the default text filter to use
+          // "startWith"
+          text: (rows, id, filterValue) => {
+            return rows.filter(row => {
+              const rowValue = row.values[id]
+              return rowValue !== undefined
+                ? String(rowValue)
+                    .toLowerCase()
+                    .startsWith(String(filterValue).toLowerCase())
+                : true
+            })
+          },
+        }),
+        []
+      )
 
+    const defaultColumn = useMemo(
+        () => ({
+          // Let's set up our default Filter UI
+          Filter: DefaultColumnFilter,
+        }),
+        []
+      )
     //deconstruct props from useTable
     const {
         getTableProps,
@@ -23,14 +77,16 @@ const DisplayTable = ({ jsonData }) => {
         nextPage,
         previousPage,
         setPageSize,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize }
     } = useTable(
         {
             columns,
             data,
-            initialState: { pageIndex: 0 }
-        },
-        usePagination)
+            initialState: { pageIndex: 0 },
+            defaultColumn,
+            filterTypes
+        }, useFilters,
+        usePagination,)
 
     return (
         <> 
@@ -71,7 +127,7 @@ const DisplayTable = ({ jsonData }) => {
                         setPageSize(Number(e.target.value))
                     }}
                 >
-                    {[10, 20, 30, 40, 50].map(pageSize => (
+                    {[10, 20, 30].map(pageSize => (
                         <option key={pageSize} value={pageSize}>
                             Show {pageSize}
                         </option>
@@ -80,7 +136,12 @@ const DisplayTable = ({ jsonData }) => {
             </div>
 
             {/* table display here */}
-            <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+            <table {...getTableProps()} 
+                style={{ 
+                    border: 'solid 2px olive',
+                    width: '100%'
+                 }}
+            >
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -95,6 +156,7 @@ const DisplayTable = ({ jsonData }) => {
                                     }}
                                 >
                                     {column.render('Header')}
+                                    <div>{column.canFilter ? column.render('Filter') : null}</div>
                                 </th>
                             ))}
                         </tr>
