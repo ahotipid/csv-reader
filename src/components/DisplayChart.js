@@ -10,7 +10,7 @@ const DisplayChart = ({ jsonData }) => {
         datasets: [
             {
                 label: 'Users',
-                backgroundColor: 'rgba(75,192,192,1)',
+                backgroundColor: 'cadetblue',
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 2,
                 data: [USUsers.length, CAUsers.length, MexUsers.length]

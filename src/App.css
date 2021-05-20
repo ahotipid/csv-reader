@@ -23,3 +23,7 @@ button {
 table {
   width: 100%;
 }
+
+canvas {
+  margin: 60px 100px;
+}
