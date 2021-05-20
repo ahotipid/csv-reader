@@ -35,7 +35,7 @@ const DisplayChart = ({ jsonData }) => {
             return user.data.Country === "Mexico"
         });
         setMexUsers(MexData);
-    }, [])
+    }, [jsonData])
 
     return (
         <div>
