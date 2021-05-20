@@ -1,7 +1,6 @@
-import { useMemo , useState } from 'react';
+import { useMemo } from 'react';
 import { useTable ,
         usePagination, 
-        useGlobalFilter,  
         useFilters} from 'react-table';
 import {matchSorter} from 'match-sorter';
 
@@ -90,6 +89,7 @@ const DisplayTable = ({ jsonData }) => {
 
     return (
         <> 
+            <h2>Table</h2>
           <div className="pagination">
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
                     {'<<'}

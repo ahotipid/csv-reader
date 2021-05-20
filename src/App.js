@@ -4,10 +4,12 @@ import { CSVReader } from 'react-papaparse';
 
 import Header from './components/Header';
 import DisplayTable from './components/DisplayTable';
+import DisplayChart from './components/DisplayChart';
 
 function App() {
   const [ jsonData , setJsonData ] = useState([]);
   const [ isUpload , setIsUpload ] = useState(false);
+  const [ displayChart , setDisplayChart ] = useState(false)
   const handleOnDrop = (data) => {
     setJsonData(data);
   };
@@ -16,6 +18,9 @@ function App() {
   };
   const handleOnRemoveFile = () => {
     setJsonData([]);
+  }
+  const handleClick = () => {
+    setDisplayChart(!displayChart);
   }
   useEffect( () => {
       if (jsonData.length === 0) {
@@ -39,12 +44,21 @@ function App() {
       >
         <span>Drop CSV file here or click to upload.</span> 
       </CSVReader>
-
+      <button
+      className = "switch"
+      onClick = {handleClick}
+      >
+        Table / Chart
+      </button>
       {
         isUpload
-        ? <DisplayTable 
-        jsonData = {jsonData}
-        />
+        ? displayChart 
+          ? <DisplayChart
+            jsonData = {jsonData}
+            />
+          : <DisplayTable 
+            jsonData = {jsonData}
+            />
         : <p>Please upload CSV file</p>
       }
       
