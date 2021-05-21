@@ -13,6 +13,9 @@ h1,h2 {
   text-align: center;
 }
 
+h3 {
+  text-align: center;
+}
 button {
   cursor: pointer;
   margin: 10px auto;
@@ -26,6 +29,7 @@ button:hover {
 }
 table {
   width: 100%;
+  margin: 5px auto 60px;
 }
 
 canvas {

@@ -40,6 +40,7 @@ const DisplayChart = ({ jsonData }) => {
     return (
         <div>
             <h2>Chart</h2>
+            <h3>North America Users by Country</h3>
             <Bar
                 data={state}
                 options={{
